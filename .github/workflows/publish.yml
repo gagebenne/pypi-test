@@ -1,0 +1,22 @@
+on:
+    release:
+        types: [published]
+  
+jobs:
+    pypi-publish:
+        name: Upload release to PyPI
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        environment:
+            name: pypi
+            url: https://pypi.org/p/pydexcom
+        permissions:
+            id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+        steps:
+            - name: build
+              run: python3 -m build --sdist --wheel --outdir dist/
+
+            - name: Publish package distributions to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                repository-url: https://test.pypi.org/legacy/
